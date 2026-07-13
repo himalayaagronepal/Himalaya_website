@@ -1,9 +1,13 @@
-"use server";
 import React from "react";
 import connectToDatabase from "../../lib/mongodb";
 import Outlet from "../../models/Outlet";
 import SubHeroSection from "../components/SubHeroSection";
 import OutletListClient from "../components/OutletListClient";
+
+// This page queries MongoDB. It must not be statically prerendered at build:
+// Vercel's build sandbox can't reach Atlas, so a build-time DB connect fails
+// the export. force-dynamic makes it render on demand at request time instead.
+export const dynamic = "force-dynamic";
 
 export default async function OutletListPage({ searchParams }: { searchParams?: Promise<{ q?: string }> }) {
   await connectToDatabase();
