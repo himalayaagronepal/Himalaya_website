@@ -1,0 +1,335 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --top-bar-height: 136px;
+  --site-header-height: 0px;
+
+  /* Text color tokens (use these in components for predictable contrast) */
+  --text-primary: #171717; /* main content */
+  --text-secondary: #6b7280; /* muted copy */
+  --text-muted: #9ca3af; /* helper / microcopy */
+  --text-inverse: #ffffff; /* for dark backgrounds */
+
+  /* Brand theme (shared) */
+  --primary: #2da8da;
+  --secondary: #f29629;
+  --tertiary: #64cc98;
+  --dark: #0a0a0a;
+  --light: #ffffff;
+  --gray: #f4f7f6;
+  --card-gray: #f9f9f9;
+}
+
+/* make body color explicit (keeps backward compatibility with --foreground) */
+body {
+  color: var(--text-primary);
+}
+
+
+/* Dark mode disabled — this app is light-themed.
+   Keeping tokens as light values to prevent system dark-mode
+   from leaking a black background through transparent UI elements. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+    --text-primary: #171717;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --text-inverse: #ffffff;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Prevent decorative absolute elements from causing horizontal scroll.
+   Apply on the offending section instead of html/body to keep position:sticky working. */
+html { overflow-x: clip; }
+body { overflow-x: clip; }
+
+/* ── Smooth, clean scrolling across all pages ────────────────────────────────
+   Smooth in-page / anchor scrolling, disabled for users who prefer reduced
+   motion. scroll-padding-top keeps anchored sections clear of the sticky
+   header, and a subtle, consistent scrollbar keeps every page feeling polished. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+html { scroll-padding-top: var(--top-bar-height); }
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+/* WebKit / Chromium — slim, rounded, neutral; .scrollbar-hide still wins where used */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* slate-300 */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; /* slate-400 */ }
+
+/* Safe-area helpers for iOS notch + home indicator */
+.safe-pt { padding-top: env(safe-area-inset-top); }
+.safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+.safe-px { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+
+/* --- Contact page theme additions (from user design) --- */
+
+.hero-section {
+  width: 100%;
+  height: 80vh;
+  height: 80dvh;
+  min-height: 480px;
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=2000');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .hero-section { height: 70dvh; min-height: 380px; }
+}
+
+/* Black underline input style used by the bold-label form */
+.input-black {
+  border-bottom: 2px solid #000000;
+  transition: all 0.28s ease;
+}
+.input-black:focus {
+  border-bottom-width: 3px;
+  outline: none;
+  padding-bottom: 8px;
+}
+
+/* Brand button (blue -> green) */
+.btn-brand {
+  background-color: #29A8DD;
+  transition: all 0.36s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-brand:hover {
+  background-color: #64cc98;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -5px rgba(100,204,152,0.4);
+}
+
+.social-link { transition: color 0.28s ease; }
+.social-link:hover { color: #64cc98; }
+
+.fade-in { animation: fadeIn 0.6s ease-out forwards; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Navbar improvements */
+.nav-link {
+  padding-left: 0.75rem; /* px-3 */
+  padding-right: 0.75rem;
+  padding-top: 0.5rem; /* py-2 */
+  padding-bottom: 0.5rem;
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 0.875rem; /* text-sm */
+  color: #0f1724; /* slate-700 */
+  transition-property: color, background-color;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+}
+.nav-link:hover {
+  color: rgb(15 23 42); /* slate-900 */
+}
+.nav-link::after {
+  content: '';
+  display: block;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, rgba(45,168,218,1), rgba(100,204,152,1));
+  transition: width 220ms cubic-bezier(.2,.9,.2,1);
+  border-radius: 2px;
+  margin-top: 6px;
+}
+.nav-link:hover::after,
+.nav-link:focus::after { width: 100%; }
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem; /* py-2 px-4 */
+  border-radius: 0.75rem; /* rounded-lg */
+  font-weight: 600; /* font-semibold */
+  font-size: 0.875rem; /* text-sm */
+  color: #fff;
+  background-image: linear-gradient(135deg,#0ea5e9,#40d384);
+  box-shadow: 0 10px 30px -10px rgba(16,24,40,0.2);
+  transition: transform 200ms cubic-bezier(.2,.9,.2,1);
+  transform-origin: center;
+  -webkit-font-smoothing: antialiased;
+}
+.nav-cta:hover { transform: translateY(-3px) scale(1.01); }
+
+/* visible focus for keyboard users */
+:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(45,168,218,0.18); border-radius: 6px; }
+
+/* mobile panel tweaks */
+#mobile-menu { -webkit-tap-highlight-color: transparent; }
+
+/* page-scoped light theme (override prefers-color-scheme for a single page) */
+.page-white-theme {
+  background: #ffffff !important;
+  color: #0b1720 !important;
+  --background: #ffffff !important;
+  --text-primary: #0b1720 !important;
+}
+
+/* cart badge */
+.cart-badge {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.cart-badge.animate { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 18px -6px rgba(16,24,40,0.35); }
+
+/* small utility for rounded dropdowns */
+.rounded-2xl { border-radius: 14px; }
+
+/* News content typography */
+.news-content {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #0f172a;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 640px) {
+  .news-content { font-size: 1rem; }
+}
+.news-content p { margin: 0 0 1.25rem; }
+.news-content h2 { font-size: 1.75rem; font-weight: 800; margin: 2rem 0 1rem; }
+.news-content h3 { font-size: 1.35rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+.news-content ul,
+.news-content ol { margin: 0 0 1.25rem 1.5rem; }
+.news-content li { margin: 0.4rem 0; }
+.news-content blockquote {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #0ea5e9;
+  background: #f8fafc;
+  color: #334155;
+}
+.news-content img { max-width: 100%; height: auto; border-radius: 14px; margin: 1rem 0; }
+
+/* Chairperson / MD letters — lighter & smaller than the article-style .news-content.
+   Deliberately sets no color or base font-size so the surrounding layout's text
+   utilities (e.g. text-gray-600, text-[15px]) control the look. */
+.letter-content p { margin: 0 0 1rem; }
+.letter-content p:last-child { margin-bottom: 0; }
+.letter-content h2 { font-size: 1.25rem; font-weight: 700; margin: 1.25rem 0 0.5rem; }
+.letter-content h3 { font-size: 1.1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+.letter-content ul,
+.letter-content ol { margin: 0 0 1rem 1.25rem; }
+.letter-content li { margin: 0.25rem 0; }
+.letter-content img { max-width: 100%; height: auto; border-radius: 14px; margin: 1rem 0; }
+
+.who-we-are-content p { margin: 0 0 1rem; }
+.who-we-are-content p:last-child { margin-bottom: 0; }
+.who-we-are-content h2, .who-we-are-content h3 { font-weight: 700; margin: 1.25rem 0 0.5rem; color: #1e293b; }
+.who-we-are-content ul, .who-we-are-content ol { margin: 0 0 1rem 1.25rem; }
+.who-we-are-content li { margin: 0.25rem 0; }
+.who-we-are-content strong { font-weight: 700; color: #1e293b; }
+
+/* Hide scrollbar but keep scroll behaviour */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Admin table wrapper helper — wraps a <table> so it can scroll horizontally on mobile
+   without forcing the page to scroll. Apply to any <div> that wraps a wide table. */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+@media (min-width: 640px) {
+  .table-scroll { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+}
+.table-scroll > table { min-width: 640px; }
+
+/* ── Swiper: hero pagination bullets ── */
+.hero-pagination .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  opacity: 1;
+  transition: all 0.35s ease;
+  margin: 0 !important;
+}
+.hero-pagination .swiper-pagination-bullet-active {
+  width: 32px;
+  border-radius: 999px;
+  background: #4ade80;
+}
+
+/* ── Swiper: gallery pagination bullets ── */
+.gallery-pagination .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.25);
+  opacity: 1;
+  transition: all 0.3s ease;
+  margin: 0 !important;
+}
+.gallery-pagination .swiper-pagination-bullet:hover {
+  background: rgba(15, 23, 42, 0.45);
+}
+.gallery-pagination .swiper-pagination-bullet-active {
+  width: 32px;
+  background: #059669;
+}
+.swiper-button-prev,
+.swiper-button-next {
+  display: none !important;
+}
+
+/* ── Google Translate widget: hide the banner & floating tooltip ── */
+#google_translate_element {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  top: -9999px !important;
+}
+html { margin-top: 0 !important; }
+body { top: 0 !important; position: static !important; }
+.goog-tooltip,
+.goog-tooltip:hover { display: none !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }
