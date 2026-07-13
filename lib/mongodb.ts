@@ -23,6 +23,13 @@ export async function connectToDatabase() {
     const opts = {
       // recommended options
       bufferCommands: false,
+      // Fail fast instead of hanging. Without this, an unreachable DB (e.g.
+      // Atlas IP allowlist not covering the Vercel build/runtime) makes
+      // connect() wait ~30s+, which blows the 60s static-generation budget at
+      // build time and stalls requests in production. 10s is well above a
+      // healthy Atlas server-selection time (<1s).
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 20000,
     } as mongoose.ConnectOptions;
     cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => mongoose);
   }
