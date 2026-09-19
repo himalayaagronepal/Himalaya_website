@@ -54,8 +54,14 @@ export async function getHomeAnnouncement(): Promise<HomeAnnouncement | null> {
       .lean();
 
     if (notice) {
-      const href = publicUrl(notice.fileUrl);
-      const bundledNotice = currentNotices.notices.find((item) => item.fileUrl && item.fileUrl === href);
+      const uploadedUrl = publicUrl(notice.fileUrl);
+      // Registered source URLs identify the same document after an admin upload.
+      // In particular, Cloudinary raw PDFs can have no extension and cannot be
+      // decoded as images. Use the document's page previews and original PDF.
+      const bundledNotice = currentNotices.notices.find((item) =>
+        uploadedUrl && (item.fileUrl === uploadedUrl || item.sourceUrls?.includes(uploadedUrl))
+      );
+      const href = bundledNotice?.fileUrl || uploadedUrl;
       // Older raw uploads can have extensionless URLs. Try an image preview and
       // let the client fall back to a document card if the browser cannot decode it.
       const isDocument = href && /\.(pdf|docx?|xlsx?|pptx?|txt|zip)$/i.test(new URL(href, LOCAL_URL_BASE).pathname);
