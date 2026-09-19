@@ -16,6 +16,8 @@ import Product from "../models/Product";
 import ChairpersonSettings, { CHAIRPERSON_DEFAULTS } from "../models/ChairpersonSettings";
 import HeroSettings, { HERO_DEFAULTS } from "../models/HeroSettings";
 import StrategicRoadmap from "./components/home/StrategicRoadmap";
+import LatestAnnouncementPopup from "./components/home/LatestAnnouncementPopup";
+import { getHomeAnnouncement } from "../lib/home-announcement";
 
 export const metadata = {
   title: "Home",
@@ -25,6 +27,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const announcement = await getHomeAnnouncement();
   let safeProducts: {
     _id: string;
     name: string;
@@ -121,6 +124,7 @@ export default async function HomePage() {
 
   return (
     <main>
+      {announcement && <LatestAnnouncementPopup key={announcement.id} announcement={announcement} />}
       <HeroCarousel {...heroData} />
       <OurFarmExperiences />
 

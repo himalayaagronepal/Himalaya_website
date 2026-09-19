@@ -4,8 +4,10 @@ import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { Calendar, ArrowRight } from 'lucide-react';
 import SectionTitle from './SectionTitle';
+import currentNotices from '../../../lib/current-notices.json';
 
 const ALL_HREF = '/news-and-notices';
+const latestNotice = currentNotices.notices[0];
 
 type Item = {
   kind: 'News' | 'Notice';
@@ -36,12 +38,10 @@ const items: Item[] = [
   },
   {
     kind: 'Notice',
-    date: 'May 20, 2026',
-    title: 'Annual General Meeting 2026 — Date & Venue Announced',
-    excerpt:
-      'Shareholders are notified of the date, time and venue for the Annual General Meeting. The official agenda and supporting documents are now available.',
-    image:
-      'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80',
+    date: new Date(latestNotice.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }),
+    title: latestNotice.title,
+    excerpt: latestNotice.excerpt,
+    image: latestNotice.previewImages[0],
   },
 ];
 

@@ -9,6 +9,7 @@ import connectToDatabase from "../../lib/mongodb";
 import News from "../../models/News";
 import Notice from "../../models/Notice";
 import ContentSettings, { CONTENT_SETTINGS_DEFAULTS } from "../../models/ContentSettings";
+import currentNotices from "../../lib/current-notices.json";
 
 export const metadata = {
   title: "News and Notices",
@@ -147,38 +148,18 @@ type BiNotice = {
   ne: { title: string };
 };
 
-const dummyNotices: BiNotice[] = [
-  {
-    day: "20", month: "May", year: "2026", type: "Notice", href: "#",
-    en: { title: "Annual General Meeting 2026 — Date & Venue Announced" },
-    ne: { title: "वार्षिक साधारण सभा २०२६ — मिति र स्थान घोषणा" },
-  },
-  {
-    day: "12", month: "May", year: "2026", type: "Tender", href: "#",
-    en: { title: "Invitation for Bids: Cold-Chain Equipment Supply" },
-    ne: { title: "बोलपत्र आह्वान: कोल्ड-चेन उपकरण आपूर्ति" },
-  },
-  {
-    day: "30", month: "Apr", year: "2026", type: "Vacancy", href: "#",
-    en: { title: "Vacancy Announcement — Agronomists & Field Officers" },
-    ne: { title: "रिक्त पद सूचना — कृषिविद् तथा क्षेत्र अधिकृत" },
-  },
-  {
-    day: "18", month: "Apr", year: "2026", type: "Circular", href: "#",
-    en: { title: "Revised Procurement Price for Large Cardamom (Q2)" },
-    ne: { title: "अलैँचीको संशोधित खरिद मूल्य (दोस्रो त्रैमासिक)" },
-  },
-  {
-    day: "05", month: "Apr", year: "2026", type: "Result", href: "#",
-    en: { title: "Selection Result — Farmer Training Scholarship 2026" },
-    ne: { title: "छनोट नतिजा — किसान तालिम छात्रवृत्ति २०२६" },
-  },
-  {
-    day: "22", month: "Mar", year: "2026", type: "Notice", href: "#",
-    en: { title: "Office Closure Schedule — Public Holidays" },
-    ne: { title: "कार्यालय बन्द तालिका — सार्वजनिक बिदा" },
-  },
-];
+const bundledNotices: BiNotice[] = currentNotices.notices.map((notice) => {
+  const date = new Date(notice.publishedAt);
+  return {
+    day: date.toLocaleDateString("en-GB", { day: "2-digit", timeZone: "UTC" }),
+    month: date.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" }),
+    year: String(date.getUTCFullYear()),
+    type: notice.type,
+    href: notice.fileUrl || "#",
+    en: { title: notice.title },
+    ne: { title: notice.titleNe || notice.title },
+  };
+});
 
 function formatLongDate(value?: Date | string | null) {
   if (!value) return "";
@@ -197,8 +178,8 @@ async function getContent(): Promise<{ en: LangContent; ne: LangContent }> {
   let featuredNe: FeaturedItem | null = toFeatured(dummyFeatured, "ne");
   let newsEn: NewsCard[] = dummyNews.map((d) => toFeatured(d, "en"));
   let newsNe: NewsCard[] = dummyNews.map((d) => toFeatured(d, "ne"));
-  let noticesEn: NoticeCard[] = dummyNotices.map((d) => toNotice(d, "en"));
-  let noticesNe: NoticeCard[] = dummyNotices.map((d) => toNotice(d, "ne"));
+  let noticesEn: NoticeCard[] = bundledNotices.map((d) => toNotice(d, "en"));
+  let noticesNe: NoticeCard[] = bundledNotices.map((d) => toNotice(d, "ne"));
 
   try {
     await connectToDatabase();

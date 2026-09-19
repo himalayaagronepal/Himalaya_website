@@ -2,41 +2,13 @@ import React from 'react';
 import { CalendarDays, FileText, Image as ImageIcon, Paperclip } from 'lucide-react';
 import SubHeroSection from '../components/SubHeroSection';
 import SectionHeading from '../components/SectionHeading';
+import currentNotices from '../../lib/current-notices.json';
 
-const notices = [
-  {
-    title: 'General Meeting Notice',
-    publishedAt: '2026-04-14',
-    excerpt: 'Annual general meeting scheduled for all stakeholders and invited participants.',
-    type: 'image',
-    image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=1200',
-    format: 'Poster image',
-  },
-  {
-    title: 'Tender Submission Update',
-    publishedAt: '2026-04-09',
-    excerpt: 'Updated submission deadline with contact details and compliance instructions.',
-    type: 'attachment',
-    attachmentLabel: 'Tender-Notice-Update.pdf',
-    format: 'PDF attachment',
-  },
-  {
-    title: 'Office Holiday Notice',
-    publishedAt: '2026-03-28',
-    excerpt: 'Public holiday schedule and office closure dates for the current quarter.',
-    type: 'attachment',
-    attachmentLabel: 'Holiday-Schedule.pdf',
-    format: 'PDF attachment',
-  },
-  {
-    title: 'Training Session Announcement',
-    publishedAt: '2026-03-20',
-    excerpt: 'Training announcement with venue, date, and participation guidelines for farmers.',
-    type: 'image',
-    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=1200',
-    format: 'Banner image',
-  },
-];
+const notices = currentNotices.notices.map((notice) => ({
+  ...notice,
+  image: notice.previewImages[0],
+  format: notice.fileUrl ? 'PDF attachment' : notice.type,
+}));
 
 export default function NoticesPage() {
   return (
@@ -53,13 +25,13 @@ export default function NoticesPage() {
           <SectionHeading
             eyebrow="Notice Board"
             title="Uploaded notices and announcements"
-            description="This is a CMS-ready placeholder showing both image notices and file attachments using dummy data."
+            description="Read our latest official notice and vacancy announcement."
           />
 
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-2">
             {notices.map((notice) => (
               <article key={notice.title} className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-[0_16px_34px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_46px_rgba(15,23,42,0.1)]">
-                {notice.type === 'image' ? (
+                {notice.image ? (
                   <div className="relative h-56 overflow-hidden">
                     <img src={notice.image} alt={notice.title} className="h-full w-full object-cover" />
                     <div className="absolute inset-0 bg-linear-to-t from-slate-900/60 via-transparent to-transparent" />
@@ -89,17 +61,17 @@ export default function NoticesPage() {
                   </h3>
                   <p className="mt-3 text-sm leading-6 text-slate-600">{notice.excerpt}</p>
 
-                  {notice.type === 'attachment' ? (
-                    <div className="mt-6 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+                  {notice.fileUrl ? (
+                    <a href={notice.fileUrl} target="_blank" rel="noopener noreferrer" className="mt-6 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 hover:bg-slate-50">
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-[#0d837f]" />
-                        <span>{notice.attachmentLabel}</span>
+                        <span>{notice.fileUrl.split('/').pop()}</span>
                       </div>
-                      <span className="font-semibold text-[#0d837f]">CMS attachment</span>
-                    </div>
+                      <span className="font-semibold text-[#0d837f]">Open PDF</span>
+                    </a>
                   ) : (
                     <div className="mt-6 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-                      Image-based notice placeholder for admin uploads.
+                      {notice.type}
                     </div>
                   )}
                 </div>

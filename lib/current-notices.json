@@ -1,0 +1,31 @@
+{
+  "notices": [
+    {
+      "id": "mantabya",
+      "title": "Mantabya",
+      "titleNe": "मन्तव्य",
+      "type": "Notice",
+      "publishedAt": "2026-09-19T00:00:00.000Z",
+      "fileUrl": "/notices/Mantabya.pdf",
+      "previewImages": [
+        "/notices/mantabya-page-1.webp",
+        "/notices/mantabya-page-2.webp",
+        "/notices/mantabya-page-3.webp",
+        "/notices/mantabya-page-4.webp",
+        "/notices/mantabya-page-5.webp",
+        "/notices/mantabya-page-6.webp"
+      ],
+      "excerpt": "Read the latest official notice and the complete attached document."
+    },
+    {
+      "id": "vacancy-agronomists-field-officers",
+      "title": "Vacancy Announcement — Agronomists & Field Officers",
+      "titleNe": "रिक्त पद सूचना — कृषिविद् तथा क्षेत्र अधिकृत",
+      "type": "Vacancy",
+      "publishedAt": "2026-04-30T00:00:00.000Z",
+      "fileUrl": "",
+      "previewImages": [],
+      "excerpt": "Vacancy Announcement — Agronomists & Field Officers"
+    }
+  ]
+}
