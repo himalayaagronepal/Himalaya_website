@@ -1,6 +1,5 @@
 import connectToDatabase from "./mongodb";
 import Notice from "../models/Notice";
-import News from "../models/News";
 import currentNotices from "./current-notices.json";
 
 export type HomeAnnouncement = {
@@ -53,6 +52,12 @@ export async function getHomeAnnouncement(): Promise<HomeAnnouncement | null> {
       .select("title titleNe type fileUrl publishedAt createdAt")
       .lean();
 
+    // Bundled publications are real notices too. Older database uploads must not
+    // hide a newer bundled notice, while later admin publications still win.
+    if (!notice || new Date(notice.publishedAt || notice.createdAt).getTime() < new Date(latest.publishedAt).getTime()) {
+      return bundledAnnouncement;
+    }
+
     if (notice) {
       const uploadedUrl = publicUrl(notice.fileUrl);
       // Registered source URLs identify the same document after an admin upload.
@@ -78,23 +83,7 @@ export async function getHomeAnnouncement(): Promise<HomeAnnouncement | null> {
       };
     }
 
-    const news = await News.findOne({ status: "published" })
-      .sort({ publishedAt: -1, createdAt: -1, _id: -1 })
-      .select("title titleNe category publishedAt createdAt excerpt coverImage slug")
-      .lean();
-
-    if (!news) return null;
-    return {
-      id: String(news._id),
-      kind: "news",
-      title: news.title,
-      titleNe: news.titleNe,
-      category: news.category || "News",
-      publishedAt: new Date(news.publishedAt || news.createdAt).toISOString(),
-      excerpt: news.excerpt,
-      href: `/news/${encodeURIComponent(news.slug)}`,
-      imageUrl: publicUrl(news.coverImage),
-    };
+    return bundledAnnouncement;
   } catch (error) {
     console.error("Unable to load the homepage announcement:", error);
     return bundledAnnouncement;

@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
-import { ArrowRight, CalendarDays, ExternalLink, FileText, Megaphone, X } from "lucide-react";
+import { ArrowRight, CalendarDays, ExternalLink, FileText, Megaphone, X, ZoomIn, ZoomOut } from "lucide-react";
 import Link from "next/link";
 import type { HomeAnnouncement } from "../../../lib/home-announcement";
 
@@ -12,14 +12,35 @@ const serverSnapshot = () => false;
 
 function NoticePreviewImage({ src, alt }: { src: string; alt: string }) {
   const [failed, setFailed] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+    <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
       {failed ? (
         <p className="p-4 text-sm text-slate-600">This page preview is unavailable. Open the attachment below to read it.</p>
       ) : (
-        // Preserve the original document's text and full page proportions.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={alt} onError={() => setFailed(true)} className="block h-auto w-full object-contain" />
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2">
+            <button
+              type="button"
+              aria-pressed={zoomed}
+              onClick={() => setZoomed(!zoomed)}
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-700"
+            >
+              {zoomed ? <ZoomOut aria-hidden="true" className="h-4 w-4" /> : <ZoomIn aria-hidden="true" className="h-4 w-4" />}
+              {zoomed ? "Fit to width" : "Zoom to read"}
+            </button>
+            <a href={src} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-700">
+              Full-size image <ExternalLink aria-hidden="true" className="h-4 w-4" />
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </div>
+          {zoomed && <p className="px-3 py-2 text-xs text-slate-600">Scroll sideways to read the enlarged notice.</p>}
+          <div role="region" aria-label="Notice image" tabIndex={0} className="max-w-full overflow-x-auto overscroll-x-contain focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700">
+            {/* Keep all text and page proportions; zoom uses the full-resolution file. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt={alt} onError={() => setFailed(true)} className={zoomed ? "block h-auto w-[1100px] max-w-none" : "block h-auto w-full object-contain"} />
+          </div>
+        </>
       )}
     </div>
   );
@@ -53,7 +74,7 @@ export default function LatestAnnouncementPopup({ announcement }: { announcement
           paddingLeft: "max(0.75rem, env(safe-area-inset-left))",
         }}
       >
-        <DialogPanel className="flex max-h-full w-full min-w-0 max-w-2xl flex-col overflow-hidden rounded-2xl bg-white text-slate-900 shadow-2xl sm:rounded-3xl">
+        <DialogPanel className="flex max-h-full w-full min-w-0 max-w-4xl flex-col overflow-hidden rounded-2xl bg-white text-slate-900 shadow-2xl sm:rounded-3xl">
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-emerald-100 bg-emerald-50 px-4 py-3 sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <Megaphone aria-hidden="true" className="h-5 w-5 shrink-0 text-emerald-700" />

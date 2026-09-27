@@ -14,6 +14,7 @@ export type FeaturedItem = {
   excerpt: string;
   image: string;
   href: string;
+  documentImage?: boolean;
 };
 
 export type NewsCard = FeaturedItem;
@@ -158,7 +159,7 @@ export default function NewsNoticesView({ en, ne }: { en: LangContent; ne: LangC
                     <img
                       src={featured.image}
                       alt={featured.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${featured.documentImage ? "object-contain bg-white" : "object-cover"}`}
                     />
                   </div>
                   <div className="flex flex-col justify-center p-5 sm:p-7">
@@ -201,7 +202,7 @@ export default function NewsNoticesView({ en, ne }: { en: LangContent; ne: LangC
                             <img
                               src={item.image}
                               alt={item.title}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${item.documentImage ? "object-contain bg-white" : "object-cover"}`}
                             />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -294,7 +295,7 @@ export default function NewsNoticesView({ en, ne }: { en: LangContent; ne: LangC
             )}
 
             <Link
-              href="#"
+              href="/notices"
               className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-slate-200 py-3 text-sm font-bold text-slate-600 transition-colors hover:border-emerald-300 hover:text-emerald-700"
             >
               {t.viewAllNotices} <ArrowRight className="h-4 w-4" />

@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
 import connectToDatabase from "../../../lib/mongodb";
 import News from "../../../models/News";
+import { agmNews } from "../../../lib/agm-notice";
 
-function formatDate(dateValue?: Date | null) {
+function formatDate(dateValue?: Date | string | null) {
   if (!dateValue) return "";
   return new Date(dateValue).toLocaleDateString();
 }
@@ -25,8 +26,12 @@ export default async function NewsDetailPage({
   const resolvedSearch = searchParams instanceof Promise ? await searchParams : searchParams;
   const lang = resolvedSearch?.lang === "ne" ? "ne" : "en";
 
-  await connectToDatabase();
-  const item = await News.findOne({ slug, status: "published" }).lean();
+  const item = slug === agmNews.slug
+    ? agmNews
+    : await (async () => {
+        await connectToDatabase();
+        return News.findOne({ slug, status: "published" }).lean();
+      })();
   if (!item) return notFound();
 
   const hasNepali = Boolean((item.titleNe || "").trim() || (item.contentHtmlNe || "").trim());
@@ -74,7 +79,9 @@ export default async function NewsDetailPage({
 
         {item.coverImage ? (
           <div className="rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-100 mb-6 sm:mb-8">
-            <img src={item.coverImage} alt={title} className="w-full h-auto object-cover" />
+            <a href={item.coverImage} target="_blank" rel="noopener noreferrer" aria-label={`${title} — open full-resolution image`}>
+              <img src={item.coverImage} alt={title} className="w-full h-auto object-contain" />
+            </a>
           </div>
         ) : null}
 

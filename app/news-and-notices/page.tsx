@@ -10,6 +10,7 @@ import News from "../../models/News";
 import Notice from "../../models/Notice";
 import ContentSettings, { CONTENT_SETTINGS_DEFAULTS } from "../../models/ContentSettings";
 import currentNotices from "../../lib/current-notices.json";
+import { agmNews, agmNewsHref, agmNotice } from "../../lib/agm-notice";
 
 export const metadata = {
   title: "News and Notices",
@@ -233,9 +234,38 @@ async function getContent(): Promise<{ en: LangContent; ne: LangContent }> {
     console.error("Error loading news & notices content:", error);
   }
 
+  // This published announcement is real content in both sample and live modes.
+  // Merge it with the existing feed, retaining newer and older admin entries.
+  const withAgm = (
+    lang: "en" | "ne",
+    featured: FeaturedItem | null,
+    news: NewsCard[],
+    notices: NoticeCard[],
+  ): LangContent => {
+    const announcement: NewsCard = {
+      title: lang === "ne" ? agmNews.titleNe : agmNews.title,
+      date: formatLongDate(agmNews.publishedAt),
+      category: lang === "ne" ? agmNews.categoryNe : agmNews.category,
+      categoryKey: agmNews.category,
+      excerpt: lang === "ne" ? agmNews.excerptNe : agmNews.excerpt,
+      image: agmNews.coverImage,
+      href: agmNewsHref,
+      documentImage: true,
+    };
+    const allNews = [announcement, ...(featured ? [featured] : []), ...news]
+      .filter((item, index) => index === 0 || item.href !== agmNewsHref)
+      .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+    const bundledAgm = bundledNotices.find((notice) => notice.href === agmNotice.fileUrl)!;
+    const allNotices = [
+      toNotice(bundledAgm, lang),
+      ...notices.filter((notice) => notice.href !== agmNotice.fileUrl && notice.title !== agmNotice.title && notice.title !== agmNotice.titleNe),
+    ].sort((a, b) => Date.parse(`${b.month} ${b.day}, ${b.year}`) - Date.parse(`${a.month} ${a.day}, ${a.year}`));
+    return { featured: allNews[0], news: allNews.slice(1), notices: allNotices };
+  };
+
   return {
-    en: { featured: featuredEn, news: newsEn, notices: noticesEn },
-    ne: { featured: featuredNe, news: newsNe, notices: noticesNe },
+    en: withAgm("en", featuredEn, newsEn, noticesEn),
+    ne: withAgm("ne", featuredNe, newsNe, noticesNe),
   };
 }
 

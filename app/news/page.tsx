@@ -1,13 +1,22 @@
 import Link from "next/link";
 import SubHeroSection from "../components/SubHeroSection";
 import { Section as AnimatedSection, Div as AnimatedDiv } from "../components/AnimatedClient";
+import { agmNews, agmNewsHref } from "../../lib/agm-notice";
 export const metadata = {
   title: "News",
   description:
     "Latest news, updates, and announcements from Himalaya Nepal Agriculture.",
     };
 
-    const featuredArticle = {
+const featuredArticle = {
+  title: agmNews.title,
+  date: new Date(agmNews.publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }),
+  category: agmNews.category,
+  excerpt: agmNews.excerpt,
+  image: agmNews.coverImage,
+};
+
+const previousFeaturedArticle = {
   title: "Himalaya Nepal Agriculture Expands Precision Farming to 12 New Districts",
   date: "February 10, 2026",
   category: "Expansion",
@@ -18,6 +27,7 @@ export const metadata = {
 };
 
 const articles = [
+  previousFeaturedArticle,
   {
     title: "Partnership With Global Organic Certification Body Announced",
     date: "January 28, 2026",
@@ -104,13 +114,13 @@ export default function NewsPage() {
             Featured Story
           </span>
           <div className="grid lg:grid-cols-2 gap-10 items-center bg-slate-50/50 border border-slate-100 rounded-[40px] overflow-hidden">
-            <div className="aspect-video lg:aspect-auto lg:h-full overflow-hidden">
+            <Link href={agmNewsHref} className="flex h-80 items-center justify-center overflow-hidden bg-white p-3 lg:h-full lg:max-h-[600px]">
               <img
                 src={featuredArticle.image}
                 alt={featuredArticle.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
-            </div>
+            </Link>
             <div className="p-8 lg:p-12">
               <div className="flex items-center gap-3 mb-4">
                 <span
@@ -128,9 +138,9 @@ export default function NewsPage() {
               <p className="text-slate-500 leading-relaxed mb-6">
                 {featuredArticle.excerpt}
               </p>
-              <span className="text-sm font-bold text-[#0891b2] hover:underline cursor-pointer">
-                Read Full Story →
-              </span>
+              <Link href={agmNewsHref} className="text-sm font-bold text-[#0891b2] hover:underline">
+                Read Full Notice →
+              </Link>
             </div>
           </div>
           </AnimatedSection>

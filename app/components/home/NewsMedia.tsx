@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Calendar, ArrowRight } from 'lucide-react';
 import SectionTitle from './SectionTitle';
 import currentNotices from '../../../lib/current-notices.json';
+import { agmNews, agmNewsHref } from '../../../lib/agm-notice';
 
 const ALL_HREF = '/news-and-notices';
 const latestNotice = currentNotices.notices[0];
@@ -15,9 +16,20 @@ type Item = {
   title: string;
   excerpt: string;
   image: string;
+  href?: string;
+  documentImage?: boolean;
 };
 
 const items: Item[] = [
+  {
+    kind: 'News',
+    date: new Date(agmNews.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }),
+    title: agmNews.title,
+    excerpt: agmNews.excerpt,
+    image: agmNews.coverImage,
+    href: agmNewsHref,
+    documentImage: true,
+  },
   {
     kind: 'News',
     date: 'May 18, 2026',
@@ -42,6 +54,8 @@ const items: Item[] = [
     title: latestNotice.title,
     excerpt: latestNotice.excerpt,
     image: latestNotice.previewImages[0],
+    href: '/notices',
+    documentImage: true,
   },
 ];
 
@@ -101,7 +115,7 @@ export default function NewsMedia() {
           </motion.p>
 
           {/* Cards grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 lg:gap-8">
             {items.map((item, index) => (
               <motion.article
                 key={index}
@@ -109,16 +123,16 @@ export default function NewsMedia() {
                 whileHover={{ y: -8, transition: { duration: 0.3, ease: 'easeOut' as const } }}
                 className="group relative flex flex-col overflow-hidden rounded-2xl border border-emerald-100/60 bg-white shadow-sm transition-all duration-500 hover:border-emerald-200 hover:shadow-[0_18px_40px_rgba(6,78,59,0.14)]"
               >
-                <Link href={ALL_HREF} className="flex flex-1 flex-col">
+                <Link href={item.href || ALL_HREF} className="flex flex-1 flex-col">
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden sm:h-52">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className={`h-full w-full transition-transform duration-700 group-hover:scale-105 ${item.documentImage ? 'object-contain bg-white' : 'object-cover'}`}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/45 to-transparent" />
+                    {!item.documentImage ? <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/45 to-transparent" /> : null}
 
                     {/* Kind badge */}
                     <span className="absolute left-4 top-4 rounded-full bg-[#11823b] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white shadow-sm">

@@ -32,14 +32,13 @@ export default function NoticesPage() {
             {notices.map((notice) => (
               <article key={notice.title} className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-[0_16px_34px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_46px_rgba(15,23,42,0.1)]">
                 {notice.image ? (
-                  <div className="relative h-56 overflow-hidden">
-                    <img src={notice.image} alt={notice.title} className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-linear-to-t from-slate-900/60 via-transparent to-transparent" />
+                  <a href={notice.image} target="_blank" rel="noopener noreferrer" aria-label={`${notice.title} — open full-resolution image`} className="relative block h-80 overflow-hidden bg-white p-3">
+                    <img src={notice.image} alt={notice.titleNe || notice.title} className="h-full w-full object-contain" />
                     <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-800">
                       <ImageIcon className="h-4 w-4 text-[#0d837f]" />
                       {notice.format}
                     </div>
-                  </div>
+                  </a>
                 ) : (
                   <div className="flex h-56 items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-white">
                     <div className="text-center">
@@ -54,11 +53,12 @@ export default function NoticesPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#0d837f]">
                     <CalendarDays className="h-4 w-4" />
-                    {new Date(notice.publishedAt).toLocaleDateString()}
+                    {new Date(notice.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
                   </div>
                   <h3 className="mt-4 text-xl font-bold text-slate-900" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                     {notice.title}
                   </h3>
+                  {notice.titleNe ? <p lang="ne" className="mt-2 text-lg font-semibold text-slate-800">{notice.titleNe}</p> : null}
                   <p className="mt-3 text-sm leading-6 text-slate-600">{notice.excerpt}</p>
 
                   {notice.fileUrl ? (
