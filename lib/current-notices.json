@@ -1,6 +1,17 @@
 {
   "notices": [
     {
+      "id": "invitation-for-bids-2083-kartik-14",
+      "title": "Invitation for Electronic Bids — 14 Kartik 2083",
+      "titleNe": "विद्युतीय बोलपत्र आह्वानको सूचना — १४ कार्तिक २०८३",
+      "type": "Tender",
+      "publishedAt": "2026-10-31T00:00:00.000Z",
+      "fileUrl": "/notices/notice-on-14th-kartik-2083.pdf",
+      "previewImages": ["/notices/notice-on-14th-kartik-2083.webp"],
+      "noticeBoardOnly": true,
+      "excerpt": "Invitation for bids for construction works at Beni, Myagdi. Contract identification number: HNKC/001/NCB/WORKS/2083/84-01. Read the complete official notice for bidding details."
+    },
+    {
       "id": "first-annual-general-meeting-2083",
       "title": "First Annual General Meeting Notice",
       "titleNe": "प्रथम वार्षिक साधारण सभा सम्बन्धी सूचना",

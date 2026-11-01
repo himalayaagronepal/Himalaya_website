@@ -234,8 +234,8 @@ async function getContent(): Promise<{ en: LangContent; ne: LangContent }> {
     console.error("Error loading news & notices content:", error);
   }
 
-  // This published announcement is real content in both sample and live modes.
-  // Merge it with the existing feed, retaining newer and older admin entries.
+  // The AGM and notice-board-only publications are real content in both modes.
+  // Merge them with the existing feed, retaining newer and older admin entries.
   const withAgm = (
     lang: "en" | "ne",
     featured: FeaturedItem | null,
@@ -255,10 +255,14 @@ async function getContent(): Promise<{ en: LangContent; ne: LangContent }> {
     const allNews = [announcement, ...(featured ? [featured] : []), ...news]
       .filter((item, index) => index === 0 || item.href !== agmNewsHref)
       .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
-    const bundledAgm = bundledNotices.find((notice) => notice.href === agmNotice.fileUrl)!;
+    const publishedNotices = currentNotices.notices.filter(
+      (notice) => notice.id === agmNotice.id || notice.noticeBoardOnly,
+    );
+    const publishedUrls = new Set(publishedNotices.flatMap((notice) => [notice.fileUrl, ...(notice.sourceUrls || [])]));
+    const publishedTitles = new Set(publishedNotices.flatMap((notice) => [notice.title, notice.titleNe]));
     const allNotices = [
-      toNotice(bundledAgm, lang),
-      ...notices.filter((notice) => notice.href !== agmNotice.fileUrl && notice.title !== agmNotice.title && notice.title !== agmNotice.titleNe),
+      ...bundledNotices.filter((notice) => publishedUrls.has(notice.href)).map((notice) => toNotice(notice, lang)),
+      ...notices.filter((notice) => !publishedUrls.has(notice.href) && !publishedTitles.has(notice.title)),
     ].sort((a, b) => Date.parse(`${b.month} ${b.day}, ${b.year}`) - Date.parse(`${a.month} ${a.day}, ${a.year}`));
     return { featured: allNews[0], news: allNews.slice(1), notices: allNotices };
   };

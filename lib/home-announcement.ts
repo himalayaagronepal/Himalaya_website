@@ -29,7 +29,8 @@ function publicUrl(value?: string): string | null {
 }
 
 export async function getHomeAnnouncement(): Promise<HomeAnnouncement | null> {
-  const latest = currentNotices.notices[0];
+  const latest = currentNotices.notices.find((notice) => !notice.noticeBoardOnly);
+  if (!latest) return null;
   const bundledAnnouncement: HomeAnnouncement = {
     id: latest.id,
     kind: "notice",
@@ -47,7 +48,10 @@ export async function getHomeAnnouncement(): Promise<HomeAnnouncement | null> {
     await connectToDatabase();
 
     // The board's sample-data settings do not control real homepage announcements.
-    const notice = await Notice.findOne({ status: "published" })
+    const noticeBoardOnlyUrls = currentNotices.notices
+      .filter((item) => item.noticeBoardOnly)
+      .flatMap((item) => [item.fileUrl, ...(item.sourceUrls || [])]);
+    const notice = await Notice.findOne({ status: "published", fileUrl: { $nin: noticeBoardOnlyUrls } })
       .sort({ publishedAt: -1, createdAt: -1, _id: -1 })
       .select("title titleNe type fileUrl publishedAt createdAt")
       .lean();

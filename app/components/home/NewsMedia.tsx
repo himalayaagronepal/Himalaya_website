@@ -8,7 +8,7 @@ import currentNotices from '../../../lib/current-notices.json';
 import { agmNews, agmNewsHref } from '../../../lib/agm-notice';
 
 const ALL_HREF = '/news-and-notices';
-const latestNotice = currentNotices.notices[0];
+const latestNotice = currentNotices.notices.find((notice) => !notice.noticeBoardOnly)!;
 
 type Item = {
   kind: 'News' | 'Notice';
